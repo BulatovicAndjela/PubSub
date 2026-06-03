@@ -1,0 +1,33 @@
+@PubSub_HostAddress = https://localhost:5001
+
+### Registruj novu osobu
+POST {{PubSub_HostAddress}}/api/person/register
+Content-Type: application/json
+
+{
+  "username": "marko",
+  "city": "Beograd",
+  "age": 25,
+  "phoneNumber": "+381645123456"
+}
+
+### Blokiranje korisnika
+POST {{PubSub_HostAddress}}/api/person/block
+Content-Type: application/json
+
+{
+  "username": "marko",
+  "blockedUsername": "ana"
+}
+
+### Potvrdi pismo
+POST {{PubSub_HostAddress}}/api/person/confirm/marko
+Accept: application/json
+
+### Pregled svih korisnika
+GET {{PubSub_HostAddress}}/api/person/all
+Accept: application/json
+
+### Ručno slanje pisama (test)
+POST {{PubSub_HostAddress}}/api/cupid/send-letters
+Accept: application/json
