@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haotični Kupidon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #764ba2;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .letter {
+            background: #f9f9f9;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            animation: slideIn 0.5s ease-in;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .letter h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .letter-detail {
+            margin: 8px 0;
+            color: #333;
+        }
+
+        .letter-detail strong {
+            color: #764ba2;
+        }
+
+        .letter-message {
+            font-style: italic;
+            color: #666;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .waiting {
+            text-align: center;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            color: #666;
+        }
+
+        .command-info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            color: #004085;
+            border: 1px solid #b8daff;
+        }
+
+        input.command {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .buttons-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .buttons-row button {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💌 Haotični Kupidon</h1>
+
+        <!-- Registracija -->
+        <div id="register-section" class="section active">
+            <h2 style="color: #764ba2; margin-bottom: 20px;">Registracija</h2>
+            <div id="register-message"></div>
+
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="city">Grad:</label>
+                    <input type="text" id="city" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Godine:</label>
+                    <input type="number" id="age" min="0" max="150" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Broj telefona:</label>
+                    <input type="tel" id="phone" required>
+                </div>
+
+                <button type="submit">Registruj se</button>
+            </form>
+        </div>
+
+        <!-- Čekanje pisama -->
+        <div id="waiting-section" class="section">
+            <div id="status-message" class="message info" style="display:none;"></div>
+            <div id="letters-container"></div>
+
+            <div class="command-info">
+                <p><strong>Komande:</strong></p>
+                <input type="text" id="command-input" class="command" placeholder="/block username ili nešto drugo...">
+                <button onclick="processCommand()">Pošalji komandu</button>
+            </div>
+
+            <div class="buttons-row">
+                <button onclick="logout()">Odjavi se</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@latest/signalr.min.js"></script>
+    <script>
+        let connection;
+        let currentUsername = null;
+
+        // Registracija
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const city = document.getElementById('city').value;
+            const age = parseInt(document.getElementById('age').value);
+            const phone = document.getElementById('phone').value;
+
+            try {
+                const response = await fetch('/api/person/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, city, age, phone })
+                });
+
+                const messageDiv = document.getElementById('register-message');
+
+                if (response.ok) {
+                    currentUsername = username;
+                    messageDiv.innerHTML = `<div class="message success">✓ Registracija uspešna! Dobrodošli, ${username}!</div>`;
+                    document.getElementById('register-section').classList.remove('active');
+                    document.getElementById('waiting-section').classList.add('active');
+                    await startListening();
+                } else {
+                    const error = await response.text();
+                    messageDiv.innerHTML = `<div class="message error">✗ ${error}</div>`;
+                }
+            } catch (error) {
+                const messageDiv = document.getElementById('register-message');
+                messageDiv.innerHTML = `<div class="message error">✗ Greška: ${error.message}</div>`;
+            }
+        });
+
+        async function startListening() {
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl("/cupid-hub")
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on("ReceiveLetter", (letter) => {
+                displayLetter(letter);
+            });
+
+            connection.on("Connected", (message) => {
+                showStatus(message);
+            });
+
+            try {
+                await connection.start();
+                await connection.invoke("JoinAsync", currentUsername);
+                showStatus("Konektovan/a! Čekam pisma...");
+            } catch (error) {
+                showError("Greška pri konekciji: " + error);
+            }
+        }
+
+        function displayLetter(letter) {
+            const container = document.getElementById('letters-container');
+            const letterHtml = `
+                <div class="letter">
+                    <h3>💌 Novo pismo!</h3>
+                    <div class="letter-detail"><strong>Od:</strong> ${letter.senderUsername}</div>
+                    <div class="letter-detail"><strong>Grad:</strong> ${letter.senderCity}</div>
+                    <div class="letter-detail"><strong>Godine:</strong> ${letter.senderAge}</div>
+                    ${letter.message !== "Nisam zainteresovan/a za upoznavanje."
+                        ? `<div class="letter-detail"><strong>Broj telefona:</strong> ${letter.senderPhone}</div>`
+                        : ''}
+                    <div class="letter-message">
+                        <strong>Poruka:</strong> "${letter.message}"
+                    </div>
+                    <button onclick="confirmLetter('${letter.senderUsername}')">Potvrdi da si video/la</button>
+                </div>
+            `;
+            container.innerHTML = letterHtml;
+        }
+
+        async function confirmLetter(senderUsername) {
+            try {
+                const response = await fetch(`/api/person/confirm/${currentUsername}`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    document.getElementById('letters-container').innerHTML =
+                        `<div class="message success">✓ Pismo je potvrđeno. Slobodan/na si za nova pisma.</div>`;
+                } else {
+                    showError("Greška pri potvrdi pismа");
+                }
+            } catch (error) {
+                showError("Greška: " + error.message);
+            }
+        }
+
+        async function processCommand() {
+            const command = document.getElementById('command-input').value.trim();
+
+            if (!command) return;
+
+            if (command.startsWith('/block ')) {
+                const blockedUser = command.substring(7).trim();
+                try {
+                    const response = await fetch('/api/person/block', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            blockerUsername: currentUsername,
+                            blockedUsername: blockedUser
+                        })
+                    });
+
+                    if (response.ok) {
+                        showStatus(`✓ Korisnik "${blockedUser}" je blokiran.`);
+                    } else {
+                        showError("Greška pri blokiranju");
+                    }
+                } catch (error) {
+                    showError("Greška: " + error.message);
+                }
+            } else {
+                showError("Nepoznata komanda. Koristi: /block username");
+            }
+
+            document.getElementById('command-input').value = '';
+        }
+
+        function showStatus(message) {
+            const statusDiv = document.getElementById('status-message');
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'message info';
+        }
+
+        function showError(message) {
+            const statusDiv = document.getElementById('status-message');
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'message error';
+        }
+
+        function logout() {
+            currentUsername = null;
+            if (connection) {
+                connection.stop();
+            }
+            document.getElementById('register-section').classList.add('active');
+            document.getElementById('waiting-section').classList.remove('active');
+            document.getElementById('register-form').reset();
+            document.getElementById('letters-container').innerHTML = '';
+            document.getElementById('register-message').innerHTML = '';
+            showStatus('Do viđenja!');
+            setTimeout(() => {
+                document.getElementById('status-message').style.display = 'none';
+            }, 2000);
+        }
+
+        // Enter za komandu
+        document.getElementById('command-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                processCommand();
+            }
+        });
+    </script>
+</body>
+</html>
