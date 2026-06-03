@@ -90,7 +90,6 @@ namespace PubSub.services
             if (Math.Abs(recipient.Age - candidate.Age) <= 2)
                 score += 20;
 
-            // Nasumični faktor 0-100 (specifikacija: RNGCryptoServiceProvider)
             score += GetRandomFactor();
 
             return score;
@@ -104,7 +103,7 @@ namespace PubSub.services
             var bytes = new byte[4];
             rng.GetBytes(bytes);
             int value = BitConverter.ToInt32(bytes, 0) & int.MaxValue;
-            return value % 101; // 0-100 uključivo
+            return value % 101; 
         }
     }
 }
